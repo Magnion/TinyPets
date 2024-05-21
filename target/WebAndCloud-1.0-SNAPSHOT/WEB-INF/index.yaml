@@ -1,0 +1,5 @@
+indexes:
+- kind: Friend 
+  properties: 
+    - name: friends 
+    - name: age 

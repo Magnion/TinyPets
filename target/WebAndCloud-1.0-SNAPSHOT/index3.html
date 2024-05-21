@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>DiceGame</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css">
+<script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+
+
+<script src="https://unpkg.com/mithril/mithril.js"></script>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+
+</head>
+<body>
+	<script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
+<script>	
+
+
+var Profile={
+  name:"",
+  email:"",
+  ID:"",
+  url:"",
+  nextToken:"",
+  list:[],
+  view: function(){
+	return m('div', {class:'container'}, [
+  	  m("h1", {class: 'title'}, "name:"+Profile.name),
+	  m("h2", {class: 'subtitle'}, "email:"+Profile.email),
+	  m("img",{"src":Profile.url}),
+	  m("button",{class:"buttonClient WebÂ 1", onclick: function(e) { Profile.loadList()}},"Msgs"),
+	  m("button",{class:"button", onclick: function(e) { Profile.postMessage()}},"Post Dummy"),
+	  m("div",m(PostView,{profile: Profile}))
+	])
+  },
+  loadList: function() {
+      return m.request({
+          method: "GET",
+          url: "_ah/api/myApi/v1/collectionresponse_entity"+'?access_token=' + encodeURIComponent(Profile.ID)
+          })
+      .then(function(result) {
+      	console.log("load_list:",result)
+      	Profile.list=result.items
+          if ('nextPageToken' in result) {
+	        	Profile.nextToken= result.nextPageToken
+          } else {
+          	Profile.nextToken=""
+          }})
+  },
+}
+
+var DiceGame={
+  turn : 0,
+  d1 : 1,
+  d2 : 1,
+  name : Profile.name,
+  score : 0,
+
+  play: function() {
+ 	if (this.turn < 10) {
+   	  this.d1 = Math.floor((Math.random() * 5) + 1);
+	  this.d2 = Math.floor((Math.random() * 5) + 1);
+	  if (this.d1 + this.d2 == 7) {
+	    this.score += 10;
+	  }
+	  this.turn++;
+	} else {
+		Score.save(this.score,this.name);
+		this.turn=0;
+		this.score=0;
+	}
+   }
+ } // DiceGame
+
+var DiceView={
+	view: function() {
+		return m('div', [
+			m('div',{class:'subtitle'},"Just play here"),
+			m("input[type=text][placeholder=name]", {
+				value: DiceGame.name,
+				class: 'input is-rounded',
+				 oninput: function (e) {
+					 DiceGame.name=e.target.value},
+				 }),
+			m('div',{class:'level'},[
+			 m('label',{class:'level-item'},"turn:"+DiceGame.turn),
+			 m('label',{class:'level-item'},"score:"+DiceGame.score),
+			]),
+			m('label',{class:'label'},"Dice 1:"+DiceGame.d1),
+			m('label',{class:'label'},"Dice 2:"+DiceGame.d2),
+			m('button',{
+				class: 'button is-link',
+				onclick: function(e) {DiceGame.play()}
+			    },"play"),
+		])
+	}	
+}
+ 
+var Score = {
+	    list: [],
+		mylist: [],
+	    loadList: function() {
+	        return m.request({
+	            method: "GET",
+	            url: "_ah/api/myApi/v1/topscores/"
+	        })
+	        .then(function(result) {
+	            Score.list = result.items
+	        	console.log("got:",result.items)
+	        	m.redraw(true) 
+	        })
+			
+	    },
+	    save: function(score,name) {
+	    	console.log("saving...",Score.current)
+	        return m.request({
+	            method: "GET",
+	            url: "_ah/api/myApi/v1/addScore/"+score+"/"+Profile.name
+	        })
+	        .then(function(result) {
+	        	console.log("got:",result)
+	        	Score.loadList()
+				myScore.loadList(name)
+	        })
+	    }
+	}
+
+var myScore = {
+    	list: [],
+    	loadList: function(name) {
+	        return m.request({
+	            method: "GET",
+	            url: "_ah/api/myApi/v1/myscores/"+Profile.name
+	        })
+	        .then(function(result) {
+	            myScore.list = result.items
+	        	console.log("got:",result.items)
+	        	m.redraw(true) 
+	        })
+	    }
+	}
+
+
+var ScoreView = {
+  oninit: Score.loadList,
+  view: function() {
+   	return m('div', [
+	  m('div',{class:'subtitle'},"Top 10 Scores"),
+	  m('table', {class:'table is-striped'},[
+	    m('tr', [
+	      m('th', {width:"20px"}, "Name"),
+	      m('th', {width:"50px"}, "Score"),
+	    ]),
+	    Score.list.map(function(item) {
+	      return m("tr", [
+  	        m('td', m('label', item.properties.name)),
+	        m('td', m('label', item.properties.score)),
+	      ])
+	    })
+	   ])
+	 ])
+  }
+}
+
+var MyScoreView = {
+  oninit: function() {
+    myScore.loadList(DiceGame.name);
+  },
+  view: function() {
+    return m('div', [
+      m('div',{class:'subtitle'},"Mes Scores"),
+      m('table', {class:'table is-striped'},[
+        m('tr', [
+          m('th', {width:"50px"}, "Score"),
+        ]),
+        myScore.list.map(function(item) {
+          return m("tr", [
+            m('td', m('label', item.properties.score)),
+          ])
+        })
+      ])
+    ])
+  }
+}
+
+
+
+function onSignIn(googleUser) {
+  var profile = googleUser.getBasicProfile();
+  Profile.name=profile.getName();
+  Profile.email=profile.getEmail();
+  Profile.ID=googleUser.getAuthResponse().id_token;
+  Profile.url=profile.getImageUrl();
+  m.route.set("/jouer")
+}
+function handleCredentialResponse(response) {
+	console.log("callback called:"+response.credential)
+    // decodeJwtResponse() is a custom function defined by you
+    // to decode the credential response.
+    const responsePayload = jwt_decode(response.credential);
+   
+    console.log("ID: " + responsePayload.sub);
+    console.log('Full Name: ' + responsePayload.name);
+    console.log('Given Name: ' + responsePayload.given_name);
+    console.log('Family Name: ' + responsePayload.family_name);
+    console.log("Image URL: " + responsePayload.picture);
+    console.log("Email: " + responsePayload.email);
+
+    DiceGame.name= responsePayload.name
+	Profile.name= responsePayload.name
+    Profile.email= responsePayload.email
+    Profile.ID=response.credential
+    Profile.url= responsePayload.picture 
+    m.route.set("/secret")
+
+ }
+
+
+ var Hello = {
+   view: function() {
+   	return m('div', {class:'container'}, [
+           m("h1", {class: 'title'}, 'The Dice Game'),
+           m('div',{class: 'tile is-ancestor'},[
+               m("div", {class: 'tile'}, m('div',{class:'tile is-child box'},m(DiceView))),
+               m("div", {class: 'tile'}, m('div',{class:'tile is-child box'},m(ScoreView))),
+			   m("div", {class: 'tile'}, m('div',{class:'tile is-child box'},m(MyScoreView))),
+           ])
+       ])
+   }
+}
+
+ var Login = {
+  view: function() {
+ 	return m('div', {class:'container'}, [
+      m("h1", {class: 'title'}, 'The Dice Game'),
+      m("div", {
+      	   "id":"g_id_onload",
+      	   "data-client_id":"1066737893006-2e64qsj2k8brsl2kl7t2jtaqpqc20ean.apps.googleusercontent.com",
+           "data-callback":"handleCredentialResponse"}),
+      m("div", {
+      	   "class":"g_id_signin",
+      	   "data-type":"standard"}),
+      ])
+    }
+}
+
+m.route(document.body, "/jouer", {
+  "/jouer": { onmatch: function() {
+            	if (Profile.ID=="") {
+					console.log("Salut");
+					m.route.set("/login");
+				}
+            	else{
+					 return Hello;
+				}
+        		}},
+  "/login": Login
+})
+
+
+
+//m.mount(document.body, Hello)	
+
+
+</script>
+</body>
+</html>
