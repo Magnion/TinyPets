@@ -3,7 +3,7 @@
 ## Description du projet
 TinyPet est une application web de création et gestion de pétitions, inspirée par des plateformes telles qu'Avaaz et Change.org. Conçue pour supporter des millions d'utilisateurs et de pétitions, notre plateforme offre une interface robuste pour une interaction démocratique efficace.
 
-## Fonctionnalités attendues
+## Fonctionnalités
 - **Création de pétitions :** Les utilisateurs peuvent créer des pétitions pour soutenir des causes.
 - **Signature de pétitions :** Les utilisateurs authentifiés peuvent signer une pétition, limitée à une signature par utilisateur.
 - **Consultation des pétitions signées :** Les utilisateurs peuvent voir les pétitions qu'ils ont signées, triées par date.
@@ -11,13 +11,24 @@ TinyPet est une application web de création et gestion de pétitions, inspirée
 - **Gestion par tags :** Les pétitions peuvent être taguées et retrouvées par tag, avec un tri par date de création.
 - **Liste des signataires :** Affiche tous les utilisateurs ayant signé une pétition spécifique.
 
+## Technologies utilisées
+- **Frontend :** Mithril.js
+- **Backend :** Services REST implémentés avec Google Cloud Endpoint en Java
+- **Base de données :** Google Datastore pour la persistance des données
+- **Gestion du projet :** Maven pour la gestion des dépendances et la construction du projet
+
 ## Installation et utilisation
 ### Configuration et déploiement avec Maven
 Pour configurer et déployer TinyPet, suivez ces instructions :
 1. Clonez le dépôt GitHub :
-1. Clonez le dépôt GitHub :
 git clone [URL du dépôt]
-2. Configurez votre environnement Google Cloud :
+2. Naviguez dans le dossier du projet et exécutez Maven pour construire le projet :
+cd TinyPet
+mvn clean install
+3. Configurez votre environnement Google Cloud :
+gcloud init
+4. Déployez l'application :
+mvn package appengine:deploy
 
 ### Accéder à l'application
 L'application est accessible via l'URL suivante : [URL de l'application Google App Engine](#)
@@ -33,9 +44,10 @@ L'application est accessible via l'URL suivante : [URL de l'application Google A
 - Création et signature de pétitions.
 - Affichage des dernières 100 pétitions.
 - Consultation des signataires d'une pétition.
+- Affichage des mes pétitions créées et signées
 
 ### Limitations
 - **Recherche par tag non fonctionnelle :** La fonctionnalité permettant de rechercher des pétitions par tag est actuellement en développement et n'est pas encore opérationnelle.
 
-### Kinds dans les datastore
+## Kinds de notre datastore
 ![Screenshot des Kinds Google Datastore](#)
