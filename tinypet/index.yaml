@@ -1,0 +1,14 @@
+indexes:
+  - kind: Petition
+    properties:
+    - name: tags
+      direction: asc
+    - name: creationDate
+      direction: desc
+
+  - kind: Client
+    properties:
+    - name: tags
+      direction: asc
+    - name: creationDate
+      direction: desc
