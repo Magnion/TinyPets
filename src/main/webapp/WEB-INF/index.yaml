@@ -1,0 +1,15 @@
+indexes:
+
+- kind: Petition
+  properties:
+  - name: tags
+    direction: asc
+  - name: creationDate
+    direction: desc
+    
+- kind: Signature
+  properties:
+  - name: petitionId
+    direction: asc
+  - name: userId
+    direction: asc
