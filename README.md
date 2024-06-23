@@ -50,4 +50,11 @@ L'application est accessible via l'URL suivante : [URL de l'application Google A
 - **Recherche par tag non fonctionnelle :** La fonctionnalité permettant de rechercher des pétitions par tag est actuellement en développement et n'est pas encore opérationnelle.
 
 ## Kinds de notre datastore
-![Screenshot des Kinds Google Datastore](#)
+
+### Petition :
+![image](https://github.com/Magnion/TinyPets/assets/72595888/979aabcc-fe78-4f36-aa45-76044c7fa54e)
+
+### Client :
+![image](https://github.com/Magnion/TinyPets/assets/72595888/ee3f1238-9e7a-4b27-831a-527b26070b76)
+
+
