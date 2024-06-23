@@ -21,7 +21,7 @@ TinyPet est une application web de création et gestion de pétitions, inspirée
 ### Configuration et déploiement avec Maven
 Pour configurer et déployer TinyPet, suivez ces instructions :
 1. Clonez le dépôt GitHub :
-git clone [[URL du dépôt](https://github.com/Magnion/TinyPets)]
+git clone https://github.com/Magnion/TinyPets
 2. Naviguez dans le dossier du projet et exécutez Maven pour construire le projet :
 cd TinyPet
 mvn clean install
